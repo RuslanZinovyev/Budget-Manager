@@ -268,7 +268,7 @@ public class ActionService {
         this.balance = balance;
     }
 
-    private List<String> getCollectionOfAmounts(List<String> allPurchases) {
+    public List<String> getCollectionOfAmounts(List<String> allPurchases) {
         return allPurchases.stream()
                 .map(line -> {
                     String[] parts = line.split(" ");
