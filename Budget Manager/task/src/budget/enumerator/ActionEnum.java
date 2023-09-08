@@ -7,6 +7,7 @@ public enum ActionEnum {
     BALANCE("4"),
     SAVE("5"),
     LOAD("6"),
+    ANALYZE("7"),
     EXIT_APPLICATION("0");
 
     private final String actionNumber;

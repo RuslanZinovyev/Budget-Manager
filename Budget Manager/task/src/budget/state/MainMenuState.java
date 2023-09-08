@@ -52,6 +52,10 @@ public class MainMenuState implements AppState {
                     Command fileLoadCommand = new FileLoadCommand();
                     fileLoadCommand.execute();
                 }
+                case ANALYZE -> {
+                    AppContext.setState(new AnalyzeMenuState());
+                    AppContext.handle();
+                }
                 case EXIT_APPLICATION -> {
                     isRunning = false;
                     Command exitAppCommand = new ExitAppCommand();

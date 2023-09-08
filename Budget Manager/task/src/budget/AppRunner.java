@@ -13,6 +13,7 @@ public class AppRunner {
             4) Balance
             5) Save
             6) Load
+            7) Analyze
             0) Exit
             """;
     public static final String CATEGORY_MENU = """
@@ -32,6 +33,14 @@ public class AppRunner {
             4) Other
             5) All
             6) Back
+            """;
+
+    public static final String ANALYZE_MENU = """
+            How do you want to sort?
+            1) Sort all purchases
+            2) Sort by type
+            3) Sort certain type
+            4) Back
             """;
 
     public static void runApplication() {

@@ -11,7 +11,6 @@ import java.io.InputStreamReader;
 import static budget.AppRunner.ALL_CATEGORY_MENU;
 
 public class ListCategoryMenuState implements AppState {
-
     private final boolean isRunning;
     private final BufferedReader reader;
 
