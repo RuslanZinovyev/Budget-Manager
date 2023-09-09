@@ -6,11 +6,11 @@ import budget.state.AnalyzeMenuState;
 
 import java.io.IOException;
 
-public class SortAllPurchasesCommand implements Command {
+public class SortByOtherTypeCommand implements Command {
     @Override
     public void execute() throws IOException {
         AnalyzeService analyzeService = AnalyzeService.getInstance();
-        analyzeService.sortAllPurchases();
+        analyzeService.sortOtherType();
         AppContext.setState(new AnalyzeMenuState());
         AppContext.handle();
     }

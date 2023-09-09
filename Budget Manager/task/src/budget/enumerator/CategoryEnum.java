@@ -5,7 +5,8 @@ public enum CategoryEnum {
     CLOTHES("2"),
     ENTERTAINMENT("3"),
     OTHER("4"),
-    BACK("5");
+    BACK("5"),
+    ALL("");
 
     private final String categoryNumber;
 

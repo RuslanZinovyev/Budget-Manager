@@ -25,6 +25,14 @@ public class AppRunner {
             5) Back
             """;
 
+    public static final String SORT_CATEGORY_MENU = """
+            Choose the type of purchase
+            1) Food
+            2) Clothes
+            3) Entertainment
+            4) Other
+            """;
+
     public static final String ALL_CATEGORY_MENU = """
             Choose the type of purchases
             1) Food

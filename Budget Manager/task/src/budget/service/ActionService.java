@@ -1,6 +1,8 @@
 package budget.service;
 
 import budget.AppContext;
+import budget.enumerator.CategoryEnum;
+import budget.model.Purchase;
 import budget.state.MainMenuState;
 
 import java.io.BufferedReader;
@@ -10,7 +12,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ActionService {
     public static final String ENTER_PURCHASE_NAME = "\nEnter purchase name:";
@@ -30,11 +31,11 @@ public class ActionService {
 
     private static ActionService instance;
 
-    private final List<String> allPurchases = new ArrayList<>();
-    private final List<String> allFood = new ArrayList<>();
-    private final List<String> allClothes = new ArrayList<>();
-    private final List<String> allEntertainment = new ArrayList<>();
-    private final List<String> allOther = new ArrayList<>();
+    private final List<Purchase> allPurchases = new ArrayList<>();
+    private final List<Purchase> allFood = new ArrayList<>();
+    private final List<Purchase> allClothes = new ArrayList<>();
+    private final List<Purchase> allEntertainment = new ArrayList<>();
+    private final List<Purchase> allOther = new ArrayList<>();
     private BigDecimal balance = new BigDecimal(0).setScale(2, RoundingMode.HALF_UP);
     private final BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
@@ -57,80 +58,46 @@ public class ActionService {
         System.out.println(INCOME_WAS_ADDED);
     }
 
-    public void addPurchase() throws IOException {
-        System.out.println(ENTER_PURCHASE_NAME);
-        String typedPurchaseName = reader.readLine();
-        System.out.println(ENTER_PRICE);
-        String typedPrice = reader.readLine();
-        StringBuilder purchase = new StringBuilder();
-
-        allPurchases.add(purchase
-                .append(typedPurchaseName)
-                .append(" $")
-                .append(typedPrice)
-                .toString());
-        System.out.println(PURCHASE_WAS_ADDED);
-    }
-
     public void addFood() throws IOException {
         System.out.println(ENTER_PURCHASE_NAME);
-        String typedPurchaseName = reader.readLine();
+        String name = reader.readLine();
         System.out.println(ENTER_PRICE);
-        String typedPrice = reader.readLine();
-        StringBuilder purchase = new StringBuilder();
+        String price = reader.readLine();
 
-        allFood.add(purchase
-                .append(typedPurchaseName)
-                .append(" $")
-                .append(typedPrice)
-                .toString());
+        allFood.add(new Purchase(CategoryEnum.FOOD, name, new BigDecimal(price)));
         allPurchases.addAll(allFood);
         System.out.println(PURCHASE_WAS_ADDED);
     }
 
     public void addClothes() throws IOException {
         System.out.println(ENTER_PURCHASE_NAME);
-        String typedPurchaseName = reader.readLine();
+        String name = reader.readLine();
         System.out.println(ENTER_PRICE);
-        String typedPrice = reader.readLine();
-        StringBuilder purchase = new StringBuilder();
+        String price = reader.readLine();
 
-        allClothes.add(purchase
-                .append(typedPurchaseName)
-                .append(" $")
-                .append(typedPrice)
-                .toString());
+        allClothes.add(new Purchase(CategoryEnum.CLOTHES, name, new BigDecimal(price)));
         allPurchases.addAll(allClothes);
         System.out.println(PURCHASE_WAS_ADDED);
     }
 
     public void addEntertainment() throws IOException {
         System.out.println(ENTER_PURCHASE_NAME);
-        String typedPurchaseName = reader.readLine();
+        String name = reader.readLine();
         System.out.println(ENTER_PRICE);
-        String typedPrice = reader.readLine();
-        StringBuilder purchase = new StringBuilder();
+        String price = reader.readLine();
 
-        allEntertainment.add(purchase
-                .append(typedPurchaseName)
-                .append(" $")
-                .append(typedPrice)
-                .toString());
+        allEntertainment.add(new Purchase(CategoryEnum.ENTERTAINMENT, name, new BigDecimal(price)));
         allPurchases.addAll(allEntertainment);
         System.out.println(PURCHASE_WAS_ADDED);
     }
 
     public void addOther() throws IOException {
         System.out.println(ENTER_PURCHASE_NAME);
-        String typedPurchaseName = reader.readLine();
+        String name = reader.readLine();
         System.out.println(ENTER_PRICE);
-        String typedPrice = reader.readLine();
-        StringBuilder purchase = new StringBuilder();
+        String price = reader.readLine();
 
-        allOther.add(purchase.append(typedPurchaseName)
-                .append(" $")
-                .append(typedPrice)
-                .toString());
+        allOther.add(new Purchase(CategoryEnum.OTHER, name, new BigDecimal(price)));
         allPurchases.addAll(allOther);
         System.out.println(PURCHASE_WAS_ADDED);
     }
@@ -143,21 +110,7 @@ public class ActionService {
         } else {
             BigDecimal totalSum = getTotalSumOfAllProducts();
             System.out.println(ALL);
-
-            allPurchases.forEach(purchase -> {
-                String[] parts = purchase.split(" ");
-                String lastAmount = parts[parts.length - 1]; // Only consider the last amount in the string
-                BigDecimal lastAmountAsBigDecimal = new BigDecimal(lastAmount.substring(1));
-                String formattedLastAmount = "$" + String.format("%.2f", lastAmountAsBigDecimal);
-
-                // Replace only the last occurrence of the lastAmount
-                int lastIndex = purchase.lastIndexOf(lastAmount);
-                String updatedPurchase = purchase.substring(0, lastIndex) + formattedLastAmount +
-                        purchase.substring(lastIndex + lastAmount.length());
-
-                System.out.println(updatedPurchase);
-            });
-
+            allPurchases.forEach(System.out::println);
             System.out.println(TOTAL_SUM + String.format("%.2f", totalSum.doubleValue()) + "\n");
         }
     }
@@ -167,8 +120,7 @@ public class ActionService {
             System.out.println(FOOD);
             System.out.println(THE_PURCHASE_LIST_IS_EMPTY);
         } else {
-            List<String> amounts = getCollectionOfAmounts(allFood);
-            BigDecimal totalSum = getSumOfAllAmounts(amounts);
+            BigDecimal totalSum = getSumOfAllAmounts(allFood);
             System.out.println(FOOD);
             allFood.forEach(System.out::println);
             System.out.println(TOTAL_SUM + totalSum + "\n");
@@ -181,8 +133,7 @@ public class ActionService {
             System.out.println(CLOTHES);
             System.out.println(THE_PURCHASE_LIST_IS_EMPTY);
         } else {
-            List<String> amounts = getCollectionOfAmounts(allClothes);
-            BigDecimal totalSum = getSumOfAllAmounts(amounts);
+            BigDecimal totalSum = getSumOfAllAmounts(allClothes);
             System.out.println(CLOTHES);
             allClothes.forEach(System.out::println);
             System.out.println(TOTAL_SUM + totalSum + "\n");
@@ -194,8 +145,7 @@ public class ActionService {
             System.out.println(ENTERTAINMENT);
             System.out.println(THE_PURCHASE_LIST_IS_EMPTY);
         } else {
-            List<String> amounts = getCollectionOfAmounts(allEntertainment);
-            BigDecimal totalSum = getSumOfAllAmounts(amounts);
+            BigDecimal totalSum = getSumOfAllAmounts(allEntertainment);
             System.out.println(ENTERTAINMENT);
             allEntertainment.forEach(System.out::println);
             System.out.println(TOTAL_SUM + totalSum + "\n");
@@ -207,8 +157,7 @@ public class ActionService {
             System.out.println(OTHER);
             System.out.println(THE_PURCHASE_LIST_IS_EMPTY);
         } else {
-            List<String> amounts = getCollectionOfAmounts(allOther);
-            BigDecimal totalSum = getSumOfAllAmounts(amounts);
+            BigDecimal totalSum = getSumOfAllAmounts(allOther);
             System.out.println(OTHER);
             allOther.forEach(System.out::println);
             System.out.println(TOTAL_SUM + totalSum + "\n");
@@ -217,19 +166,19 @@ public class ActionService {
 
     public void printBalance() {
         if (!allFood.isEmpty()) {
-            BigDecimal foodExpenses = getSumOfAllAmounts(getCollectionOfAmounts(allFood));
+            BigDecimal foodExpenses = getSumOfAllAmounts(allFood);
             balance = balance.subtract(foodExpenses);
         }
         if (!allClothes.isEmpty()) {
-            BigDecimal clothesExpenses = getSumOfAllAmounts(getCollectionOfAmounts(allClothes));
+            BigDecimal clothesExpenses = getSumOfAllAmounts(allClothes);
             balance = balance.subtract(clothesExpenses);
         }
         if (!allEntertainment.isEmpty()) {
-            BigDecimal entertainmentExpenses = getSumOfAllAmounts(getCollectionOfAmounts(allEntertainment));
+            BigDecimal entertainmentExpenses = getSumOfAllAmounts(allEntertainment);
             balance = balance.subtract(entertainmentExpenses);
         }
         if (!allOther.isEmpty()) {
-            BigDecimal otherExpenses = getSumOfAllAmounts(getCollectionOfAmounts(allOther));
+            BigDecimal otherExpenses = getSumOfAllAmounts(allOther);
             balance = balance.subtract(otherExpenses);
         }
         System.out.println(BALANCE + balance);
@@ -240,23 +189,23 @@ public class ActionService {
         System.exit(0);
     }
 
-    public List<String> getAllPurchases() {
+    public List<Purchase> getAllPurchases() {
         return allPurchases;
     }
 
-    public List<String> getAllFood() {
+    public List<Purchase> getAllFood() {
         return allFood;
     }
 
-    public List<String> getAllClothes() {
+    public List<Purchase> getAllClothes() {
         return allClothes;
     }
 
-    public List<String> getAllEntertainment() {
+    public List<Purchase> getAllEntertainment() {
         return allEntertainment;
     }
 
-    public List<String> getAllOther() {
+    public List<Purchase> getAllOther() {
         return allOther;
     }
 
@@ -268,31 +217,17 @@ public class ActionService {
         this.balance = balance;
     }
 
-    public List<String> getCollectionOfAmounts(List<String> allPurchases) {
+    public BigDecimal getSumOfAllAmounts(List<Purchase> allPurchases) {
         return allPurchases.stream()
-                .map(line -> {
-                    String[] parts = line.split(" ");
-                    return parts[parts.length - 1];
-                })
-                .collect(Collectors.toList());
-    }
-
-    private BigDecimal getSumOfAllAmounts(List<String> allAmounts) {
-        return allAmounts.stream()
-                .map(purchase -> new BigDecimal(purchase.substring(1))
-                        .setScale(2, RoundingMode.HALF_UP))
+                .map(Purchase::getPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add)
                 .setScale(2, RoundingMode.HALF_UP);
     }
 
-    private BigDecimal getTotalSumOfAllProducts() {
-        List<String> foodAmount = getCollectionOfAmounts(allFood);
-        List<String> clothesAmount = getCollectionOfAmounts(allClothes);
-        List<String> entertainmentAmount = getCollectionOfAmounts(allEntertainment);
-        List<String> otherAmount = getCollectionOfAmounts(allOther);
-        return getSumOfAllAmounts(foodAmount)
-                .add(getSumOfAllAmounts(clothesAmount))
-                .add(getSumOfAllAmounts(entertainmentAmount))
-                .add(getSumOfAllAmounts(otherAmount));
+    public BigDecimal getTotalSumOfAllProducts() {
+        return getSumOfAllAmounts(allFood)
+                .add(getSumOfAllAmounts(allClothes))
+                .add(getSumOfAllAmounts(allEntertainment))
+                .add(getSumOfAllAmounts(allOther));
     }
 }

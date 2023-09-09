@@ -3,6 +3,7 @@ package budget.model;
 import budget.enumerator.CategoryEnum;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 public class Purchase {
     private CategoryEnum category;
@@ -24,23 +25,24 @@ public class Purchase {
         return category;
     }
 
-    public void setCategory(CategoryEnum category) {
-        this.category = category;
-    }
-
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(BigDecimal price) {
-        this.price = price;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Purchase purchase = (Purchase) o;
+        return category == purchase.category && Objects.equals(name, purchase.name) && Objects.equals(price, purchase.price);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(category, name, price);
     }
 }

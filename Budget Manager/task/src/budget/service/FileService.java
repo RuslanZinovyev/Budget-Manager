@@ -1,5 +1,8 @@
 package budget.service;
 
+import budget.enumerator.CategoryEnum;
+import budget.model.Purchase;
+
 import java.io.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -30,36 +33,36 @@ public class FileService {
 
             if (!actionService.getAllFood().isEmpty()) {
                 writer.println("Food:");
-                for (String foodPurchase : actionService.getAllFood()) {
-                    writer.println(foodPurchase);
+                for (Purchase foodPurchase : actionService.getAllFood()) {
+                    writer.println(foodPurchase.toString());
                 }
             }
 
             if (!actionService.getAllClothes().isEmpty()) {
                 writer.println("Clothes:");
-                for (String clothesPurchase : actionService.getAllClothes()) {
-                    writer.println(clothesPurchase);
+                for (Purchase clothesPurchase : actionService.getAllClothes()) {
+                    writer.println(clothesPurchase.toString());
                 }
             }
 
             if (!actionService.getAllEntertainment().isEmpty()) {
                 writer.println("Entertainment:");
-                for (String entertainmentPurchase : actionService.getAllEntertainment()) {
-                    writer.println(entertainmentPurchase);
+                for (Purchase entertainmentPurchase : actionService.getAllEntertainment()) {
+                    writer.println(entertainmentPurchase.toString());
                 }
             }
 
             if (!actionService.getAllOther().isEmpty()) {
                 writer.println("Other:");
-                for (String otherPurchase : actionService.getAllOther()) {
-                    writer.println(otherPurchase);
+                for (Purchase otherPurchase : actionService.getAllOther()) {
+                    writer.println(otherPurchase.toString());
                 }
             }
 
             if (!actionService.getAllPurchases().isEmpty()) {
                 writer.println("All:");
-                for (String purchase : actionService.getAllPurchases()) {
-                    writer.println(purchase);
+                for (Purchase purchase : actionService.getAllPurchases()) {
+                    writer.println(purchase.toString());
                 }
             }
 
@@ -70,7 +73,7 @@ public class FileService {
     }
 
     public void loadFile() {
-        String currentCategory = "";
+        CategoryEnum currentCategory = null;
 
         try (BufferedReader reader = new BufferedReader(new FileReader(FILE_NAME))) {
             String line;
@@ -84,22 +87,44 @@ public class FileService {
                 }
 
                 if (line.endsWith(":")) {
-                    currentCategory = line.substring(0, line.length() - 1);
+                    currentCategory = CategoryEnum.valueOf(line.substring(0, line.length() - 1).toUpperCase());
                     continue;
                 }
 
                 switch (currentCategory) {
-                    case "Food" -> actionService.getAllFood().add(line);
-                    case "Clothes" -> actionService.getAllClothes().add(line);
-                    case "Entertainment" -> actionService.getAllEntertainment().add(line);
-                    case "Other" -> actionService.getAllOther().add(line);
-                    case "All" -> actionService.getAllPurchases().add(line);
+                    case FOOD -> actionService.getAllFood().add(parseFromLine(CategoryEnum.FOOD, line));
+                    case CLOTHES -> actionService.getAllClothes().add(parseFromLine(CategoryEnum.CLOTHES, line));
+                    case ENTERTAINMENT ->
+                            actionService.getAllEntertainment().add(parseFromLine(CategoryEnum.ENTERTAINMENT, line));
+                    case OTHER -> actionService.getAllOther().add(parseFromLine(CategoryEnum.OTHER, line));
+                    case ALL -> actionService.getAllPurchases().add(parseFromLine(CategoryEnum.ALL, line));
                 }
             }
-
             System.out.println(PURCHASES_WERE_LOADED);
         } catch (IOException e) {
             System.out.println("An error occurred while reading the file.");
         }
+    }
+
+    private Purchase parseFromLine(CategoryEnum category, String line) {
+        int index = line.lastIndexOf(" $");
+
+        if (index == -1) {
+            return null;
+        }
+
+        String name = line.substring(0, index).trim();
+        BigDecimal price = new BigDecimal(line.substring(index + 2).trim());
+
+        if (category.equals(CategoryEnum.FOOD))
+            return new Purchase(CategoryEnum.FOOD, name, price);
+        else if (category.equals(CategoryEnum.CLOTHES))
+            return new Purchase(CategoryEnum.CLOTHES, name, price);
+        else if (category.equals(CategoryEnum.ENTERTAINMENT))
+            return new Purchase(CategoryEnum.ENTERTAINMENT, name, price);
+        else if (category.equals(CategoryEnum.OTHER))
+            return new Purchase(CategoryEnum.OTHER, name, price);
+
+        return new Purchase(CategoryEnum.ALL, name, price);
     }
 }
